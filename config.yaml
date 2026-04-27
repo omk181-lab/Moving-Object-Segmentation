@@ -1,0 +1,58 @@
+# config.yaml — all tunable parameters in one place
+
+video:
+  input_path: "input_video.mp4"      # MP4 file or directory of JPEGs
+  max_frames: null                    # null = process all frames
+  resize_short_edge: 480             # Resize for speed; null = original resolution
+
+pass1_optical_flow:
+  model: "raft-small"                # Options: raft-small, raft-things
+  weights: "things"                  # Pretrained weights
+  batch_size: 8                      # Number of frame pairs per GPU batch
+  iters: 12                          # RAFT iteration count (12 = good speed/quality)
+  mixed_precision: true              # FP16 for speed
+
+pass2_motion_analysis:
+  flow_magnitude_threshold: 2.0      # Pixels with flow magnitude > this are "moving"
+  min_object_area: 500               # Minimum pixel area to count as an object
+  max_objects: 4                     # Maximum number of objects to track
+  morphology_kernel_size: 5          # Erosion/dilation kernel for cleanup
+  temporal_window: 3                 # Number of frames an object must appear in
+  temporal_iou_threshold: 0.05       # IoU threshold for linking detections across frames
+  nms_iou_threshold: 0.3            # NMS threshold for merging overlapping final detections
+  centroid_distance_threshold: 120   # Max centroid distance (px) for linking across frames
+  detection_frame_range: null        # null = auto (first 80% of flow maps)
+  camera_motion_compensation: false  # Enable for moving cameras; disable for static cameras
+  max_object_area_ratio: 0.4        # Objects larger than this fraction of frame are filtered
+  # Flow-direction clustering (replaces connected components)
+  cluster_spatial_weight: 1.0       # Weight for (x,y) in clustering features
+  cluster_flow_weight: 3.0          # Weight for (dx,dy) — higher = more direction-sensitive
+  cluster_distance: 40.0            # Merge distance for hierarchical clustering
+  max_cluster_points: 5000          # Downsample moving pixels above this count
+  # Border rejection
+  reject_border_detections: true    # Drop detections touching the frame border
+  border_margin: 5                  # Pixel margin for border rejection
+  # Bbox padding for SAMURAI
+  bbox_padding_ratio: 0.15          # Pad bboxes by this ratio on each side
+
+pass3_tracking:
+  sam2_model_size: "base_plus"       # Options: tiny, small, base_plus, large
+  sam2_checkpoint: null              # Auto-downloads if null
+  max_objects: 4                     # Must match pass2
+  # Kalman filter parameters
+  kalman_process_noise: 1.0
+  kalman_measurement_noise: 10.0
+  # SAMURAI memory selection
+  memory_bank_size: 6               # Max frames in memory bank
+  motion_score_weight: 0.4
+  affinity_score_weight: 0.4
+  occurrence_score_weight: 0.2
+  memory_quality_threshold: 0.6     # Below this, frame is excluded from memory
+
+output:
+  save_masks: true                   # Save per-object binary masks
+  save_visualization: true           # Save overlay video
+  save_flow: true                    # Save optical flow maps (debug)
+  save_detection_debug: true          # Save Pass 2 motion masks (debug)
+  output_dir: "outputs/"
+  visualization_alpha: 0.4          # Mask overlay transparency

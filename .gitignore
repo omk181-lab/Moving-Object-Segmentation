@@ -1,0 +1,47 @@
+# ---- datasets / heavyweight artefacts ----
+dataset/
+checkpoints/
+eval_outputs/
+test_samurai_out/
+outputs/
+motion_output/
+motion_output_*/
+motion_semantic_*/
+pass1_optical_flow/
+pass2_motion_analysis/
+pass3_tracking/
+backup/
+.pylibs/
+utils/
+
+# ---- third-party clones (track separately if needed) ----
+third_party/
+
+# ---- media / large binaries ----
+*.mp4
+*.avi
+*.mov
+*.mkv
+*.webm
+*.pt
+*.pth
+*.onnx
+
+# ---- old / backup source ----
+motion_bbox_detector_backup_correct.py
+
+# ---- python ----
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+.venv/
+venv/
+.env
+
+# ---- editor / OS ----
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
